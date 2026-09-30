@@ -28,6 +28,8 @@ const gameState = {
 const inputState = {
     left: false,
     right: false,
+    up: false,
+    down: false,
     accelerate: false,
     brake: false,
 };
@@ -60,6 +62,9 @@ document.addEventListener('keyup', handleKeyUp);
 function handleKeyDown(e) {
     if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') inputState.left = true;
     if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') inputState.right = true;
+    if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') inputState.up = true;
+    if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') inputState.down = true;
+    if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) e.preventDefault();
     if (e.key === ' ') { inputState.accelerate = true; e.preventDefault(); }
     if (e.key === 'Shift') inputState.brake = true;
 }
@@ -67,6 +72,8 @@ function handleKeyDown(e) {
 function handleKeyUp(e) {
     if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') inputState.left = false;
     if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') inputState.right = false;
+    if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') inputState.up = false;
+    if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') inputState.down = false;
     if (e.key === ' ') inputState.accelerate = false;
     if (e.key === 'Shift') inputState.brake = false;
 }
@@ -126,13 +133,19 @@ function update() {
     // Keep speed within bounds
     gameState.speed = Math.max(0, Math.min(gameState.speed, CONFIG.maxSpeed));
 
-    // Handle steering
-    const steerAmount = 5;
-    if (inputState.left && gameState.bikeX > 30) {
-        gameState.bikeX -= steerAmount;
+    // Handle horizontal and vertical movement
+    const moveAmount = 5;
+    if (inputState.left && gameState.bikeX > 70) {
+        gameState.bikeX -= moveAmount;
     }
-    if (inputState.right && gameState.bikeX < CONFIG.canvasWidth - 30) {
-        gameState.bikeX += steerAmount;
+    if (inputState.right && gameState.bikeX < CONFIG.canvasWidth - 70) {
+        gameState.bikeX += moveAmount;
+    }
+    if (inputState.up && gameState.bikeY > 30) {
+        gameState.bikeY -= moveAmount;
+    }
+    if (inputState.down && gameState.bikeY < CONFIG.canvasHeight - 30) {
+        gameState.bikeY += moveAmount;
     }
 
     // Update distance
